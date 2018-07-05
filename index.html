@@ -34,10 +34,11 @@
 		var map;
 		var player;
 		var cursors;
-		var groundLayer, coinLayer;
+		var groundLayer, coinLayer, overLayer;
 		var text;
 		var score = 0;
 		var text;
+		var endText
 
 		/**
 		 * [preload: This function is used to load the assets for our game]
@@ -73,6 +74,9 @@
 				//create the ground layer
 				groundLayer = map.createDynamicLayer('World', groundTiles, 0, 0);
 
+				//creates the secrets
+				overLayer = map.createDynamicLayer('Tile Layer 3', groundTiles, 0, 0);
+
 				//The player will collide with this layer
 				groundLayer.setCollisionByExclusion([-1]);
 
@@ -84,7 +88,7 @@
 			//PLAYER
 				
 				player = this.physics.add.sprite(200,200, 'player');
-				player.setBounce(0.2);
+				player.setBounce(0);
 				player.setCollideWorldBounds(true);
 
 				//Add Keyboard Events
@@ -156,7 +160,7 @@
 				
 				if( cursors.left.isDown ){ // If the left arrow key is pressed down
 					//activate motion
-					player.body.setVelocityX(-200);
+					player.setVelocityX(-200);
 
 					//activate animation
 					player.anims.play('walk', true);
@@ -166,7 +170,7 @@
 
 				}else if(cursors.right.isDown){  // If the right arrow key is pressed down
 					//activate motion
-					player.body.setVelocityX(200);
+					player.setVelocityX(200);
 
 					//activate animation
 					player.anims.play('walk', true);
@@ -174,12 +178,17 @@
 					//flip image horizontally
 					player.flipX = false;
 
+				}else {
+					player.setVelocityX(0);
+					player.anims.play('walk',false);
 				}
 
 				if((cursors.space.isDown || cursors.up.isDown) && player.body.onFloor()){
 					
 					player.body.setVelocityY(-500);
 				}
+
+
 		}
 
 
@@ -198,6 +207,15 @@
 
 			//update Score UI
 			text.setText(score);
+
+			if (score == 74){
+				endText = this.add.text(100, 100, 'A WINNER IS YOU', {
+					fontSize : '60px',
+					fill: '#ffffff'
+				});
+
+				endText.setScrollFactor(0);
+			}
 
 			return false;
 		}
