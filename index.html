@@ -34,7 +34,7 @@
 		var map;
 		var player;
 		var cursors;
-		var groundLayer, coinLayer, overLayer;
+		var groundLayer, coinLayer, overLayer, doorLayer;
 		var text;
 		var score = 0;
 		var text;
@@ -54,8 +54,18 @@
 			//simple coin image
 			this.load.image('coin', 'assets/coinGold.png');
 
+			//door image
+			this.load.image('QQ1PZT6', 'assets/QQ1PZT6.png', {frameWidth: 70, frameHeight: 70});
+
 			//player animations
 			this.load.atlas('player', 'assets/player.png', 'assets/player.json');
+
+			this.load.image('star','assets/star.png')
+
+			this.load.image('empty','assets/emptyStar.png')
+
+			this.load.image('black','assets/blackScreen.png')
+
 		}
 
 		/**
@@ -127,10 +137,19 @@
 				var coinTiles = map.addTilesetImage('coin');
 
 				//add coints as tiles
-				coinLayer = map.createDynamicLayer('Coins', coinTiles, 0, 0);
+				coinLayer = map.createDynamicLayer('Coins', coinTiles, 0, 0)
 
 				coinLayer.setTileIndexCallback(17, collectCoin, this );
 
+			//END DOORS
+				//Door image
+				//tiles for the ground layer
+				var doorTiles = map.addTilesetImage('QQ1PZT6');
+
+				//create the ground layer
+				doorLayer = map.createDynamicLayer('End', doorTiles, 0, 0);
+
+				doorLayer.setTileIndexCallback(18, reachDoor, this );
 			//OBJECT COLLISIONS
 			
 				//Collision between floor and player
@@ -139,10 +158,12 @@
 				//Collision between coin and player
 				this.physics.add.overlap(player, coinLayer);
 
+				this.physics.add.overlap(player, doorLayer);
+
 			
 			//SCORE UI
 				
-				text = this.add.text(20, 570, '0', {
+				text = this.add.text(20, 570, '0/74', {
 					fontSize : '20px',
 					fill: '#ffffff'
 				});
@@ -206,18 +227,56 @@
 			score++;
 
 			//update Score UI
-			text.setText(score);
+			text.setText(score+"/74");
+
+
+			return false;
+		}
+
+		function reachDoor( sprite, tile){
+			star = this.add.image(0,0,'black');
+			star.setScrollFactor(0);
+
+			star = this.add.image(200,250,'star');
+			star.setScrollFactor(0);
+
+			if(score >= 50){
+				star = this.add.image(400,250,'star');
+				star.setScrollFactor(0);
+			} else{
+				star = this.add.image(400,250,'empty');
+				star.setScrollFactor(0);
+			}
 
 			if (score == 74){
-				endText = this.add.text(100, 100, 'A WINNER IS YOU', {
+				star = this.add.image(600,250,'star');
+				star.setScrollFactor(0);
+			}else{
+				star = this.add.image(600,250,'empty');
+				star.setScrollFactor(0);
+			}
+
+			endText = this.add.text(150, 100, 'Level Complete', {
 					fontSize : '60px',
 					fill: '#ffffff'
 				});
-
+			text.setText("")
+			text = this.add.text(250, 400, 'Score: '+score, {
+					fontSize : '60px',
+					fill: '#ffffff'
+				});
+				text.setScrollFactor(0)
 				endText.setScrollFactor(0);
+			if (score < 74){
+				text = this.add.text(175, 500, 'Hint: Test Walls for secrets', {
+					fontSize : '30px',
+					fill: '#ffffff'
+				});
+				text.setScrollFactor(0)
 			}
+				this.physics.pause();
+				return false
 
-			return false;
 		}
 
 	</script>	
